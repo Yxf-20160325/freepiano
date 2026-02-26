@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreePiano</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        h1 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .piano-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+        
+        .piano {
+            display: flex;
+            position: relative;
+            min-width: max-content;
+        }
+        
+        .key {
+            width: 60px;
+            height: 200px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 0 0 5px 5px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 10px;
+            font-weight: bold;
+            transition: all 0.1s ease;
+            text-align: center;
+        }
+        
+        .key:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .key.active {
+            background-color: #ddd;
+            transform: translateY(2px);
+        }
+        
+        .key.black {
+            width: 40px;
+            height: 130px;
+            background-color: #333;
+            color: white;
+            position: absolute;
+            margin-left: -20px;
+            z-index: 1;
+        }
+        
+        .key.black.active {
+            background-color: #555;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .instructions {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+        }
+        
+        .instructions h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .instructions p {
+            margin-bottom: 10px;
+            color: #666;
+        }
+        
+        .keyboard-layout {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .keyboard-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .keyboard-key {
+            width: 30px;
+            height: 30px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>FreePiano</h1>
+    
+    <div class="piano-container">
+        <div class="piano" id="piano">
+        <!-- 低低音 -->
+        <div class="key" data-note="C2">C<br>1</div>
+        <div class="key black" data-note="C#2">C#<br>1#</div>
+        <div class="key" data-note="D2">D<br>2</div>
+        <div class="key black" data-note="D#2">D#<br>2#</div>
+        <div class="key" data-note="E2">E<br>3</div>
+        <div class="key" data-note="F2">F<br>4</div>
+        <div class="key black" data-note="F#2">F#<br>4#</div>
+        <div class="key" data-note="G2">G<br>5</div>
+        <div class="key black" data-note="G#2">G#<br>5#</div>
+        <div class="key" data-note="A2">A<br>6</div>
+        <div class="key black" data-note="A#2">A#<br>6#</div>
+        <div class="key" data-note="B2">B<br>7</div>
+        
+        <!-- 低音 -->
+        <div class="key" data-note="C3">C<br>1</div>
+        <div class="key black" data-note="C#3">C#<br>1#</div>
+        <div class="key" data-note="D3">D<br>2</div>
+        <div class="key black" data-note="D#3">D#<br>2#</div>
+        <div class="key" data-note="E3">E<br>3</div>
+        <div class="key" data-note="F3">F<br>4</div>
+        <div class="key black" data-note="F#3">F#<br>4#</div>
+        <div class="key" data-note="G3">G<br>5</div>
+        <div class="key black" data-note="G#3">G#<br>5#</div>
+        <div class="key" data-note="A3">A<br>6</div>
+        <div class="key black" data-note="A#3">A#<br>6#</div>
+        <div class="key" data-note="B3">B<br>7</div>
+        
+        <!-- 中音 -->
+        <div class="key" data-note="C4">C<br>1</div>
+        <div class="key black" data-note="C#4">C#<br>1#</div>
+        <div class="key" data-note="D4">D<br>2</div>
+        <div class="key black" data-note="D#4">D#<br>2#</div>
+        <div class="key" data-note="E4">E<br>3</div>
+        <div class="key" data-note="F4">F<br>4</div>
+        <div class="key black" data-note="F#4">F#<br>4#</div>
+        <div class="key" data-note="G4">G<br>5</div>
+        <div class="key black" data-note="G#4">G#<br>5#</div>
+        <div class="key" data-note="A4">A<br>6</div>
+        <div class="key black" data-note="A#4">A#<br>6#</div>
+        <div class="key" data-note="B4">B<br>7</div>
+        
+        <!-- 高音 -->
+        <div class="key" data-note="C5">C<br>1</div>
+        <div class="key black" data-note="C#5">C#<br>1#</div>
+        <div class="key" data-note="D5">D<br>2</div>
+        <div class="key black" data-note="D#5">D#<br>2#</div>
+        <div class="key" data-note="E5">E<br>3</div>
+        <div class="key" data-note="F5">F<br>4</div>
+        <div class="key black" data-note="F#5">F#<br>4#</div>
+        <div class="key" data-note="G5">G<br>5</div>
+        <div class="key black" data-note="G#5">G#<br>5#</div>
+        <div class="key" data-note="A5">A<br>6</div>
+        <div class="key black" data-note="A#5">A#<br>6#</div>
+        <div class="key" data-note="B5">B<br>7</div>
+        
+        <!-- 高高音 -->
+        <div class="key" data-note="C6">C<br>1</div>
+        <div class="key black" data-note="C#6">C#<br>1#</div>
+        <div class="key" data-note="D6">D<br>2</div>
+        <div class="key black" data-note="D#6">D#<br>2#</div>
+        <div class="key" data-note="E6">E<br>3</div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <button id="playDemo">播放示例</button>
+        <button id="clear">清空</button>
+    </div>
+    
+    <div class="instructions">
+        <h2>使用说明</h2>
+        <p>1. 点击钢琴键或使用键盘按键来弹奏音符</p>
+        <p>2. 键盘布局：</p>
+        <div class="keyboard-layout">
+            <div class="keyboard-item"><div class="keyboard-key">A</div> C4</div>
+            <div class="keyboard-item"><div class="keyboard-key">W</div> C#4</div>
+            <div class="keyboard-item"><div class="keyboard-key">S</div> D4</div>
+            <div class="keyboard-item"><div class="keyboard-key">E</div> D#4</div>
+            <div class="keyboard-item"><div class="keyboard-key">D</div> E4</div>
+            <div class="keyboard-item"><div class="keyboard-key">F</div> F4</div>
+            <div class="keyboard-item"><div class="keyboard-key">T</div> F#4</div>
+            <div class="keyboard-item"><div class="keyboard-key">G</div> G4</div>
+            <div class="keyboard-item"><div class="keyboard-key">Y</div> G#4</div>
+            <div class="keyboard-item"><div class="keyboard-key">H</div> A4</div>
+            <div class="keyboard-item"><div class="keyboard-key">U</div> A#4</div>
+            <div class="keyboard-item"><div class="keyboard-key">J</div> B4</div>
+            <div class="keyboard-item"><div class="keyboard-key">K</div> C5</div>
+            <div class="keyboard-item"><div class="keyboard-key">O</div> C#5</div>
+            <div class="keyboard-item"><div class="keyboard-key">L</div> D5</div>
+            <div class="keyboard-item"><div class="keyboard-key">P</div> D#5</div>
+            <div class="keyboard-item"><div class="keyboard-key">;</div> E5</div>
+        </div>
+    </div>
+    
+    <script>
+        // 音符映射
+        const noteMap = {
+            'A': 'C4',
+            'W': 'C#4',
+            'S': 'D4',
+            'E': 'D#4',
+            'D': 'E4',
+            'F': 'F4',
+            'T': 'F#4',
+            'G': 'G4',
+            'Y': 'G#4',
+            'H': 'A4',
+            'U': 'A#4',
+            'J': 'B4',
+            'K': 'C5',
+            'O': 'C#5',
+            'L': 'D5',
+            'P': 'D#5',
+            ';': 'E5'
+        };
+        
+        // 音频上下文
+        let audioContext;
+        
+        // 初始化音频上下文
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+        
+        // 播放音符
+        function playNote(note) {
+            initAudioContext();
+            
+            const noteFrequencies = {
+                // 低低音
+                'C2': 65.41,
+                'C#2': 69.30,
+                'D2': 73.42,
+                'D#2': 77.78,
+                'E2': 82.41,
+                'F2': 87.31,
+                'F#2': 92.50,
+                'G2': 98.00,
+                'G#2': 103.83,
+                'A2': 110.00,
+                'A#2': 116.54,
+                'B2': 123.47,
+                
+                // 低音
+                'C3': 130.81,
+                'C#3': 138.59,
+                'D3': 146.83,
+                'D#3': 155.56,
+                'E3': 164.81,
+                'F3': 174.61,
+                'F#3': 185.00,
+                'G3': 196.00,
+                'G#3': 207.65,
+                'A3': 220.00,
+                'A#3': 233.08,
+                'B3': 246.94,
+                
+                // 中音
+                'C4': 261.63,
+                'C#4': 277.18,
+                'D4': 293.66,
+                'D#4': 311.13,
+                'E4': 329.63,
+                'F4': 349.23,
+                'F#4': 369.99,
+                'G4': 392.00,
+                'G#4': 415.30,
+                'A4': 440.00,
+                'A#4': 466.16,
+                'B4': 493.88,
+                
+                // 高音
+                'C5': 523.25,
+                'C#5': 554.37,
+                'D5': 587.33,
+                'D#5': 622.25,
+                'E5': 659.25,
+                'F5': 698.46,
+                'F#5': 739.99,
+                'G5': 783.99,
+                'G#5': 830.61,
+                'A5': 880.00,
+                'A#5': 932.33,
+                'B5': 987.77,
+                
+                // 高高音
+                'C6': 1046.50,
+                'C#6': 1108.73,
+                'D6': 1174.66,
+                'D#6': 1244.51,
+                'E6': 1318.51
+            };
+            
+            const frequency = noteFrequencies[note];
+            if (!frequency) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 1);
+        }
+        
+        // 处理按键按下
+        function handleKeyDown(note) {
+            const key = document.querySelector(`[data-note="${note}"]`);
+            if (key) {
+                key.classList.add('active');
+                playNote(note);
+            }
+        }
+        
+        // 处理按键释放
+        function handleKeyUp(note) {
+            const key = document.querySelector(`[data-note="${note}"]`);
+            if (key) {
+                key.classList.remove('active');
+            }
+        }
+        
+        // 绑定钢琴键点击事件
+        document.querySelectorAll('.key').forEach(key => {
+            key.addEventListener('mousedown', () => {
+                const note = key.dataset.note;
+                handleKeyDown(note);
+            });
+            
+            key.addEventListener('mouseup', () => {
+                const note = key.dataset.note;
+                handleKeyUp(note);
+            });
+            
+            key.addEventListener('mouseleave', () => {
+                const note = key.dataset.note;
+                handleKeyUp(note);
+            });
+        });
+        
+        // 绑定键盘事件
+        document.addEventListener('keydown', (e) => {
+            if (e.repeat) return;
+            const note = noteMap[e.key.toUpperCase()];
+            if (note) {
+                handleKeyDown(note);
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            const note = noteMap[e.key.toUpperCase()];
+            if (note) {
+                handleKeyUp(note);
+            }
+        });
+        
+        // 播放示例
+        document.getElementById('playDemo').addEventListener('click', () => {
+            const demoNotes = ['C4', 'E4', 'G4', 'C5', 'G4', 'E4', 'C4'];
+            const delay = 300;
+            
+            demoNotes.forEach((note, index) => {
+                setTimeout(() => {
+                    handleKeyDown(note);
+                    setTimeout(() => {
+                        handleKeyUp(note);
+                    }, delay - 50);
+                }, index * delay);
+            });
+        });
+        
+        // 清空
+        document.getElementById('clear').addEventListener('click', () => {
+            document.querySelectorAll('.key').forEach(key => {
+                key.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
